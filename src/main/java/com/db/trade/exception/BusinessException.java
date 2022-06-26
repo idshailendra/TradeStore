@@ -12,7 +12,7 @@ public class BusinessException extends TradeException{
 	}
 
 	public BusinessException(ExceptionConstants errorCode, Exception exception) {
-		super();
+		super(errorCode, exception);
 	}
 	
 	

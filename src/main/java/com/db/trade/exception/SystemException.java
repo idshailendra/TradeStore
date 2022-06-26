@@ -12,6 +12,6 @@ public class SystemException extends TradeException{
 	}
 
 	public SystemException(ExceptionConstants errorCode, Exception exception) {
-		super();
+		super(errorCode, exception);
 	}
 }

@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import com.db.trade.constant.ApplicationConstant;
 import com.db.trade.constant.ExceptionConstants;
 import com.db.trade.exception.BusinessException;
 import com.db.trade.model.Trade;
@@ -74,5 +75,33 @@ import com.db.trade.util.TradeValidator;
 			Assert.assertNull(ex);
 		}
 		
-
+		@Test
+		public void testvalidateTradeVersionWithSameVersion() {
+			Trade  trade = new Trade("T1", 1l,"CP-1", "B1",LocalDate.now().plusDays(1L),ApplicationConstant.TRADE_DETAILS_EXPIRED_N);
+			TradeDto tradeRequest = new TradeDto("T1", 1, "CP-1", "B1", LocalDate.now().plusDays(1L));
+			Exception ex = null;
+			try {
+				Mockito.when(tradeDao.findTradeDetailsByOrderAndLimit(tradeRequest.getTradeId())).thenReturn(trade);
+				tradeValidator.doTradePreValidation(tradeRequest);
+			}catch(Exception tve ) {
+				ex = tve;
+			}
+			Assert.assertNull(ex);
+		}
+		
+		
+		@Test
+		public void testvalidateTradeVersionWithFewerVersion() {
+			Trade  trade = new Trade("T1", 2l,"CP-1", "B1",LocalDate.now().plusDays(1L),ApplicationConstant.TRADE_DETAILS_EXPIRED_N);
+			TradeDto tradeRequest = new TradeDto("T1", 1, "CP-1", "B1", LocalDate.now().plusDays(1L));
+			Exception ex = null;
+			try {
+				Mockito.when(tradeDao.findTradeDetailsByOrderAndLimit(tradeRequest.getTradeId())).thenReturn(trade);
+				tradeValidator.doTradePreValidation(tradeRequest);
+			}catch(BusinessException be ) {
+				Assert.assertNotNull(be);
+				Assert.assertEquals(ExceptionConstants.ERROR_1004, be.getErrorCode());
+			}
+			
+		}
 }
